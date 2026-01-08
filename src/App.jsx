@@ -1,73 +1,64 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
+import RCAWizard from "./pages/RCAWizard";
 
-import NavBar from './components/NavBar';
-import MedicalLayout from './components/MedicalLayout';
-import ProtectedRoute from './components/ProtectedRoute';
+/**
+ * Tema MUI:
+ * - Estética limpia y consistente con el canvas azul de ReactFlow.
+ * - No cambia funcionalidad, solo estilos.
+ */
+const theme = createTheme({
+  palette: {
+    mode: "light",
+    primary: { main: "#1976D2" },   // Azul fuerte (igual al flow)
+    secondary: { main: "#43A047" }, // Verde (service)
+    background: {
+      default: "#F6F9FF",
+      paper: "#FFFFFF",
+    },
+    text: {
+      primary: "#0B1F33",
+      secondary: "#3A4A5A",
+    },
+  },
+  shape: { borderRadius: 12 },
+  typography: {
+    fontFamily: [
+      "Inter",
+      "system-ui",
+      "-apple-system",
+      "Segoe UI",
+      "Roboto",
+      "Arial",
+      "sans-serif",
+    ].join(","),
+    h5: { fontWeight: 700 },
+    subtitle1: { fontWeight: 600 },
+    button: { textTransform: "none", fontWeight: 700 },
+  },
+  components: {
+    MuiPaper: {
+      styleOverrides: { root: { borderRadius: 14 } },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: { borderRadius: 12, paddingLeft: 16, paddingRight: 16 },
+      },
+    },
+    MuiTextField: { defaultProps: { variant: "outlined" } },
+  },
+});
 
-import LandingPage from './pages/LandingPage';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import MedicalLogin from './pages/MedicalLogin';
-
-import Remisiones from './pages/Remisiones';
-import SearchRemission from './pages/SearchRemission';
-import ServicioTecnico from './pages/ServicioTecnico';
-import VolumeReportPage from './pages/VolumeReportPage';
-
-import SearchSpecialists from './pages/SearchSpecialists';
-import BookingForm from './components/BookingForm';
-import BookingList from './components/BookingList';
-import SpecialistDetails from './pages/SpecialistDetails';
-import CalendarPage from './pages/CalendarPage';
-
-
-import RCAWizard from './pages/RCAWizard';
-
-const theme = createTheme({});
-
-function App() {
+export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-          {/* Públicas */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/medical-login" element={<MedicalLogin />} />
-
-          {/* Médicas protegidas */}
-          <Route element={
-            <ProtectedRoute>
-              <MedicalLayout />
-            </ProtectedRoute>
-          }>
-            <Route path="/remisiones" element={<Remisiones />} />
-            <Route path="/entrega-equipo" element={<SearchRemission />} />
-            <Route path="/servicio-tecnico" element={<ServicioTecnico />} />
-            <Route path="/reports/volume" element={<VolumeReportPage />} />
-          </Route>
-
-          {/* Flujo de especialistas */}
-          <Route element={
-            <ProtectedRoute>
-              <NavBar />
-            </ProtectedRoute>
-          }>
-            <Route path="/search-specialists" element={<SearchSpecialists />} />
-            <Route path="/create-booking"    element={<BookingForm />} />
-            <Route path="/bookings"          element={<BookingList />} />
-            <Route path="/specialists/:id"   element={<SpecialistDetails />} />
-            <Route path="/calendar"          element={<CalendarPage />} />
-            <Route path="/rca-wizard"        element={<RCAWizard />} />
-          </Route>
+          <Route path="/" element={<RCAWizard />} />
+          <Route path="/rca-wizard" element={<RCAWizard />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
   );
 }
-
-export default App;

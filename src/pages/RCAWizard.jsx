@@ -1,88 +1,100 @@
-import React, { useState } from 'react';
-import axiosClient from '../api/axiosClient';
+// src/pages/RCAWizard.jsx
+import { useState } from "react";
+import axiosClient from "../api/axiosClient";
+import JourneyGraph from "../components/JourneyGraph";
 import {
   Container,
-  Heading,
   Box,
+  Paper,
+  Typography,
+  TextField,
   Button,
   Stack,
-  Input,
-  useToast,
   Alert,
-  AlertIcon,
-} from '@chakra-ui/react';
-import JourneyGraph from '../components/JourneyGraph';
+  CircularProgress,
+} from "@mui/material";
 
 export default function RCAWizard() {
-  const [chainInput, setChainInput] = useState('');
-  const [chainLoading, setChainLoading] = useState(false);
+  const [chainInput, setChainInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [routes, setRoutes] = useState([]);
-  const [chainError, setChainError] = useState(null);
-  const [results, setResults] = useState(null);
+  const [error, setError] = useState("");
 
-  const toast = useToast();
-
-  const handleChain = async () => {
-    setChainError(null);
+  const handleSearch = async () => {
+    setError("");
     setRoutes([]);
-    setResults(null);
-    if (!chainInput || !chainInput.trim()) {
-      setChainError("Ingrese la cadena a buscar.");
+
+    const q = chainInput.trim();
+    if (!q) {
+      setError("Ingrese el servicio o flujo a buscar.");
       return;
     }
-    setChainLoading(true);
+
+    setIsLoading(true);
     try {
-      const { data } = await axiosClient.post('/rca/backtrace', { search: chainInput });
-      setRoutes(Array.isArray(data.routes) ? data.routes : []);
-      setResults(data);
-      if (!data || !data.routes || data.routes.length === 0) {
-        toast({ title: "No se encontraron rutas padres ni transactions.", status: "info" });
-      }
-    } catch (err) {
-      setChainError("Error en la búsqueda de rutas. Revisa la conexión.");
-      toast({ title: "Error en búsqueda encadenada", status: "error" });
+      const { data } = await axiosClient.post("/rca/backtrace", { search: q });
+      const r = Array.isArray(data?.routes) ? data.routes : [];
+      setRoutes(r);
+      if (r.length === 0) setError("No se encontraron rutas padres ni transactions.");
+    } catch {
+      setError("Error en la búsqueda de rutas. Revisa la conexión.");
+    } finally {
+      setIsLoading(false);
     }
-    setChainLoading(false);
   };
 
-  function renderAllRoutesGraph() {
-    if (!routes || routes.length === 0) return null;
-    return (
-      <Box mt={5}>
-        <Heading size="sm" mb={2}>Rutas encontradas (journey visual):</Heading>
-        <JourneyGraph routes={routes} />
-      </Box>
-    );
-  }
-
   return (
-    <Container maxW="6xl" py={8}>
-      <Heading mb={6}>RCA Wizard (Sterling OMS)</Heading>
-      <Box mt={10} p={4} borderWidth={1} borderRadius="md" bg="gray.50">
-        <Heading size="sm" mb={2}>Buscar todas las rutas padres (journey backwards)</Heading>
-        <Stack spacing={3}>
-          <Input
-            placeholder="adidasLAM_ReturnUpdateSvc"
+    <Container maxWidth="lg" sx={{ py: 4, minHeight: "100vh" }}>
+      <Typography variant="h5" fontWeight={600} gutterBottom align="left">
+        RCA Wizard (Sterling OMS)
+      </Typography>
+
+      <Paper
+        variant="outlined"
+        sx={{
+          p: 3,
+          borderRadius: 2,
+          borderColor: "rgba(25, 118, 210, 0.25)",
+          background: "rgba(255,255,255,0.9)",
+        }}
+      >
+        <Typography variant="subtitle1" gutterBottom align="center">
+          Escribe el servicio o flujo para hacer el backtrace.
+        </Typography>
+
+        <Stack spacing={2}>
+          <TextField
+            size="small"
+            label="Servicio o flujo"
+            placeholder="adidasLAM_CNCCancelEmail"
             value={chainInput}
-            onChange={e => setChainInput(e.target.value)}
-            fontSize="sm"
+            onChange={(e) => setChainInput(e.target.value)}
+            fullWidth
           />
-          <Button
-            colorScheme="blue"
-            onClick={handleChain}
-            isLoading={chainLoading}
-          >
-            Buscar rutas padres
-          </Button>
-          {chainError && (
-            <Alert status="error" fontSize="sm">
-              <AlertIcon />
-              {chainError}
-            </Alert>
+
+          <Box>
+            <Button
+              variant="contained"
+              onClick={handleSearch}
+              disabled={isLoading}
+              startIcon={isLoading ? <CircularProgress size={18} /> : null}
+            >
+              {isLoading ? "Buscando…" : "Buscar rutas padres"}
+            </Button>
+          </Box>
+
+          {error && <Alert severity="warning">{error}</Alert>}
+
+          {!!routes.length && (
+            <Box mt={1}>
+              <Typography variant="subtitle2" gutterBottom align="left">
+                Rutas encontradas (journey visual)
+              </Typography>
+              <JourneyGraph routes={routes} />
+            </Box>
           )}
-          {renderAllRoutesGraph()}
         </Stack>
-      </Box>
+      </Paper>
     </Container>
   );
 }

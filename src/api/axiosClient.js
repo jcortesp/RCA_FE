@@ -1,17 +1,18 @@
-import axios from 'axios';
+import axios from "axios";
 
+/**
+ * Cliente Axios
+ *
+ * Para funcional:
+ * - Define el "backend destino" para este FE.
+ *
+ * Para dev:
+ * - baseURL apunta al backend local (Spring Boot) en 8080
+ */
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
-  timeout: 900000, // 5 minutos (en milisegundos)
+  baseURL: "http://localhost:8080/api",
+  timeout: 60000,
+  headers: { "Content-Type": "application/json" },
 });
-
-axiosClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
 
 export default axiosClient;

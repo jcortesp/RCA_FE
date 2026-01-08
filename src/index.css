@@ -1,13 +1,26 @@
-body {
+/* src/index.css */
+
+/* RESET BASE */
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
   margin: 0;
+  padding: 0;
+}
+
+/* Fondo general */
+body {
   font-family: Arial, sans-serif;
   background-color: #f8f9fa;
 }
 
-h1, h2, h3 {
-  color: #343a40;
-}
-
-p {
-  color: #495057;
+/* React Flow */
+.react-flow {
+  width: 100%;
+  height: 100%;
+  isolation: isolate;
 }
