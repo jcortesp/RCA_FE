@@ -1,12 +1,7 @@
 import axios from "axios";
 
 /**
- * Cliente Axios
- *
- * Para funcional:
  * - Define el "backend destino" para este FE.
- *
- * Para dev:
  * - baseURL apunta al backend local (Spring Boot) en 8080
  */
 const axiosClient = axios.create({

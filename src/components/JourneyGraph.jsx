@@ -146,15 +146,9 @@ function renderValue(v) {
 }
 
 /**
- * ✅ Drawer: SOLO los campos requeridos
- *
- * Requerimiento:
+
  * - service/flow: flowName, flowKey, serverKey, flowGroupName
  * - transaction: serverKey, transactionKey, transactionName, owner, createUserId, createTs, modifyTs
- *
- * Fuente:
- * - preferir node.details (que arma el backend)
- * - fallback: armar desde root fields del nodo si details no existe
  */
 function pickDetailsForDrawer(node) {
   const type = safeTrim(node?.type);
@@ -182,7 +176,7 @@ function pickDetailsForDrawer(node) {
     };
   }
 
-  // Default: si aparece otro tipo, al menos intenta mostrar details
+  // Si aparece otro tipo, al menos intenta mostrar details
   return d;
 }
 
@@ -205,9 +199,7 @@ function layoutNodesAndEdges(routes) {
       if (!nodeMap.has(id)) {
         const labelText = nodeLabel(step);
 
-        // ✅ MUY IMPORTANTE:
-        // - Guardamos el nodo COMPLETO en data (incluye details)
-        // - Y el label de ReactFlow lo dejamos como componente (ellipsis)
+        // - Guardamos el nodo COMPLETO (incluye details)
         nodeMap.set(id, {
           id,
           type: "default",
